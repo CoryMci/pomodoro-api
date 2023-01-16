@@ -1,8 +1,16 @@
 const Project = require("../models/project");
 
 // Display list of all Projects.
-exports.project_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project list");
+exports.project_list = function (req, res, next) {
+  Project.find({})
+    .populate("task")
+    .exec(function (err, list_projects) {
+      if (err) {
+        return next(err);
+      }
+      //Successful, so render
+      res.json({ title: "Project List", project_list: list_projects });
+    });
 };
 
 // detail page for a specific Project.

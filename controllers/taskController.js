@@ -1,10 +1,15 @@
 const Task = require("../models/task");
 
 // Display list of all Tasks.
-exports.task_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Task list");
+exports.task_list = function (req, res, next) {
+  Task.find({}).exec(function (err, list_tasks) {
+    if (err) {
+      return next(err);
+    }
+    //Successful, so render
+    res.json({ title: "Tasks", task_list: list_tasks });
+  });
 };
-
 // detail page for a specific task.
 exports.task_detail = (req, res) => {
   res.send(`NOT IMPLEMENTED: task detail: ${req.params.id}`);

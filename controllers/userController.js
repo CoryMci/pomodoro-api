@@ -1,8 +1,26 @@
+const Project = require("../models/project");
+const Task = require("../models/task");
 const User = require("../models/user");
 
-// detail page for a specific user.
+const async = require("async");
+
 exports.user_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: User detail: ${req.params.id}`);
+  async.parallel(
+    {
+      project_count(callback) {
+        Project.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
+      },
+      task_count(callback) {
+        Task.countDocuments({}, callback);
+      },
+    },
+    (err, results) => {
+      res.json({
+        title: "Default user",
+        data: results,
+      });
+    }
+  );
 };
 
 exports.index = (req, res) => {
