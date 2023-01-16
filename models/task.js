@@ -9,4 +9,4 @@ const TaskSchema = new Schema({
   time_act: { type: Number, min: 0, default: 0, required: true },
 });
 
-module.exports = mongoose.model("Project", TaskSchema);
+module.exports = mongoose.model("Task", TaskSchema);
