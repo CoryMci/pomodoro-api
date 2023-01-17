@@ -11,11 +11,11 @@ const project_controller = require("../controllers/projectController");
 // GET catalog home page.
 router.get("/", user_controller.index);
 
-// GET request for creating a User. NOTE This must come before routes that display user (uses id).  -> deferred until we add new user option
-// router.get("/user/create", user_controller.user_create_get);
+// GET request for creating a User. NOTE This must come before routes that display user (uses id).
+router.get("/user/create", user_controller.user_create_get);
 
 // POST request for creating user.
-// router.post("/user/create", user_controller.user_create_post);
+router.post("/user/create", user_controller.user_create_post);
 
 // GET request to delete user.
 // router.get("/user/:id/delete", user_controller.user_delete_get);
