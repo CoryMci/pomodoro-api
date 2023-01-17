@@ -19,7 +19,16 @@ exports.project_list = function (req, res, next) {
 
 // detail page for a specific Project.
 exports.project_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Project detail: ${req.params.id}`);
+  Project.findOne({ _id: req.params.id }).exec((err, found_project) => {
+    if (err) {
+      res.statusCode = 404;
+    }
+    if (found_project) {
+      res.json(found_project);
+    } else {
+      res.json({ error: 404 });
+    }
+  });
 };
 
 // Project create form on GET.
