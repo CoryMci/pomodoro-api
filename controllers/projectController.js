@@ -1,5 +1,8 @@
 const Project = require("../models/project");
 
+const { body, validationResult } = require("express-validator");
+const async = require("async");
+
 // Display list of all Projects.
 exports.project_list = function (req, res, next) {
   Project.find({})
@@ -20,13 +23,55 @@ exports.project_detail = (req, res) => {
 
 // Project create form on GET.
 exports.project_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project create GET");
+  res.render("project_form", { title: "Create Project" });
 };
 
 // Handle Project create on POST.
-exports.project_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project create POST");
-};
+exports.project_create_post = [
+  // Validate and sanitize the name field.
+  body("name", "Project Name required").trim().isLength({ min: 1 }).escape(),
+  //body("est_time", "Must be a number between 1 and 100").isInt({ min: 1, max: 100 }),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Project object with escaped and trimmed data.
+    const project = new Project({ title: req.body.name, completed: false });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("project_form", {
+        title: "Create Project",
+        project,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid.
+      // Check if Project with same name already exists.
+      Project.findOne({ name: req.body.name }).exec((err, found_project) => {
+        if (err) {
+          return next(err);
+        }
+
+        if (found_project) {
+          // Project exists, redirect to its detail page.
+          res.redirect(found_project.url);
+        } else {
+          project.save((err) => {
+            if (err) {
+              return next(err);
+            }
+            // Project saved. Redirect to genre detail page.
+            res.redirect(project.url);
+          });
+        }
+      });
+    }
+  },
+];
 
 // Display Project delete form on GET.
 exports.project_delete_get = (req, res) => {

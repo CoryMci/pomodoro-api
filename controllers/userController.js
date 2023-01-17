@@ -41,8 +41,6 @@ exports.user_create_post = [
   // Process request after validation and sanitization.
   (req, res, next) => {
     // Extract the validation errors from a request.
-    console.log(req.body);
-    console.log("debug");
     const errors = validationResult(req);
 
     // Create a user object with escaped and trimmed data.
