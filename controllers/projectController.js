@@ -1,4 +1,5 @@
 const Project = require("../models/project");
+const User = require("../models/user");
 
 const { body, validationResult } = require("express-validator");
 const async = require("async");
@@ -36,7 +37,6 @@ exports.project_create_post = [
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-
     // Create a Project object with escaped and trimmed data.
     const project = new Project({ title: req.body.name, completed: false });
 
@@ -51,7 +51,7 @@ exports.project_create_post = [
     } else {
       // Data from form is valid.
       // Check if Project with same name already exists.
-      Project.findOne({ name: req.body.name }).exec((err, found_project) => {
+      Project.findOne({ title: req.body.name }).exec((err, found_project) => {
         if (err) {
           return next(err);
         }
@@ -64,8 +64,26 @@ exports.project_create_post = [
             if (err) {
               return next(err);
             }
-            // Project saved. Redirect to genre detail page.
-            res.redirect(project.url);
+            // Project saved. Add to "default" user ---> todo: User functionality deferred
+            User.findOne({ name: "default" }).exec((err, user) => {
+              if (err) {
+                return next(err);
+              }
+              if (user) {
+                console.log("test");
+                user.projects.push(project._id);
+                user.save((err) => {
+                  if (err) {
+                    return next(err);
+                  }
+                  // Redirect to genre detail page.
+                  res.redirect(project.url);
+                });
+              } else {
+                //no user found, saving project without user. This path should not really occur.
+                res.redirect(project.url);
+              }
+            });
           });
         }
       });
