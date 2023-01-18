@@ -30,7 +30,7 @@ exports.index = (req, res) => {
 
 // User create form
 exports.user_create_get = (req, res) => {
-  res.render("user_form", { title: "Create User" });
+  res.render("user_form", { title: "Create User", errors: false });
 };
 
 // Handle User create on POST.
