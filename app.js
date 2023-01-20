@@ -5,18 +5,41 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("dotenv").config(); //to secure DB connection URI
 
+const session = require("express-session");
+var passport = require("passport");
+var crpyto = require("crypto");
+
 // Set up mongoose connection
+const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 const mongoDB = process.env.uri;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
+const sessionStore = MongoStore.create({
+  mongoUrl: mongoDB,
+  collection: "pomo_db",
+});
+
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog"); //Import routes for "catalog" area of site
 
 var app = express();
+
+//initialize session
+app.use(
+  session({
+    secret: "some secret",
+    resave: false,
+    saveUninitialized: true,
+    store: sessionStore, //stores session info in MongoStore mongoose connection.
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, //1 day expiry
+    },
+  })
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
