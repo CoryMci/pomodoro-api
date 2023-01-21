@@ -73,26 +73,7 @@ exports.project_create_post = [
             if (err) {
               return next(err);
             }
-            // Project saved. Add to "default" user ---> todo: User functionality deferred
-            User.findOne({ name: "default" }).exec((err, user) => {
-              if (err) {
-                return next(err);
-              }
-              if (user) {
-                console.log("test");
-                user.projects.push(project._id);
-                user.save((err) => {
-                  if (err) {
-                    return next(err);
-                  }
-                  // Redirect to genre detail page.
-                  res.redirect(project.url);
-                });
-              } else {
-                //no user found, saving project without user. This path should not really occur.
-                res.redirect(project.url);
-              }
-            });
+            res.redirect(project.url);
           });
         }
       });
