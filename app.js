@@ -8,11 +8,12 @@ require("dotenv").config(); //to secure DB connection URI
 const session = require("express-session");
 var passport = require("passport");
 var crpyto = require("crypto");
+require("./config/passport");
 
 // Set up mongoose connection
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
-const mongoDB = process.env.uri;
+const mongoDB = process.env.URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -31,7 +32,7 @@ var app = express();
 //initialize session
 app.use(
   session({
-    secret: "some secret",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     store: sessionStore, //stores session info in MongoStore mongoose connection.
@@ -40,6 +41,10 @@ app.use(
     },
   })
 );
+
+//passport authentication
+app.use(passport.initialize());
+app.use(passport.session());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

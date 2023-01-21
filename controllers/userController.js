@@ -1,6 +1,7 @@
 const Project = require("../models/project");
 const Task = require("../models/task");
 const User = require("../models/user");
+const passwordUtils = require("../lib/passwordUtils");
 
 const { body, validationResult } = require("express-validator");
 const async = require("async");
@@ -45,11 +46,17 @@ exports.user_create_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
+    // generates a salted hash from user input
+    const saltHash = passwordUtils.genPassword(req.body.password);
+
+    const salt = saltHash.salt;
+    const hash = saltHash.hash;
+
     // Create a user object with escaped and trimmed data.
     const user = new User({
       username: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
+      hash: hash,
+      salt: salt,
     });
 
     if (!errors.isEmpty()) {
