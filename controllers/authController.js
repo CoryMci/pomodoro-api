@@ -1,41 +1,40 @@
-const Project = require("../models/project");
-const Task = require("../models/task");
 const User = require("../models/user");
 const passwordUtils = require("../lib/passwordUtils");
+const passport = require("passport");
 
 const { body, validationResult } = require("express-validator");
-const async = require("async");
 
-exports.user_detail = (req, res) => {
-  async.parallel(
-    {
-      project_count(callback) {
-        Project.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
-      },
-      task_count(callback) {
-        Task.countDocuments({}, callback);
-      },
-    },
-    (err, results) => {
-      res.json({
-        title: "Default user",
-        data: results,
-      });
-    }
-  );
+exports.login_get = (req, res, next) => {
+  const form =
+    '<h1>Login Page</h1><form method="POST" action="/login">\
+    Enter Username:<br><input type="text" name="username">\
+    <br>Enter Password:<br><input type="password" name="password">\
+    <br><br><input type="submit" value="Submit"></form>';
+
+  res.send(form);
 };
 
-exports.index = (req, res) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+exports.login_post = passport.authenticate("local", {
+  failureRedirect: "/login-failure",
+  successRedirect: "/login-success",
+});
+
+exports.logout_get = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 };
 
 // User create form
-exports.user_create_get = (req, res) => {
+exports.register_get = (req, res) => {
   res.render("user_form", { title: "Create User", errors: false });
 };
 
 // Handle User create on POST.
-exports.user_create_post = [
+exports.register_post = [
   // Validate and sanitize the name field.
   body("name", "Username required").trim().isLength({ min: 1 }).escape(),
   body("password", "Password required").isLength({ min: 1 }).escape(),
@@ -90,23 +89,3 @@ exports.user_create_post = [
     }
   },
 ];
-
-// // Display User delete form on GET. -> deferred until we add new user option
-// exports.user_delete_get = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User delete GET");
-// };
-
-// // Handle User delete on POST. -> deferred until we add new user option
-// exports.user_delete_post = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User delete POST");
-// };
-
-// // Display User update form on GET. -> deferred until we add new user option
-// exports.user_update_get = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User update GET");
-// };
-
-// // Handle User update on POST. -> deferred until we add new user option
-// exports.user_update_post = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User update POST");
-// };
