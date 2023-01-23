@@ -6,15 +6,13 @@ const async = require("async");
 
 // Display list of all Projects.
 exports.project_list = function (req, res, next) {
-  Project.find({})
-    .populate("task")
-    .exec(function (err, list_projects) {
-      if (err) {
-        return next(err);
-      }
-      //Successful, so render
-      res.json({ title: "Project List", project_list: list_projects });
-    });
+  Project.find({ user: req.user._id }).exec(function (err, list_projects) {
+    if (err) {
+      return next(err);
+    }
+    //Successful, so render
+    res.json({ project_list: list_projects });
+  });
 };
 
 // detail page for a specific Project.
@@ -39,7 +37,7 @@ exports.project_create_get = (req, res) => {
 // Handle Project create on POST.
 exports.project_create_post = [
   // Validate and sanitize the name field.
-  body("name", "Project Name required").trim().isLength({ min: 1 }).escape(),
+  body("title", "Project Title required").trim().isLength({ min: 1 }).escape(),
   //body("est_time", "Must be a number between 1 and 100").isInt({ min: 1, max: 100 }),
 
   // Process request after validation and sanitization.
@@ -47,20 +45,29 @@ exports.project_create_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     // Create a Project object with escaped and trimmed data.
-    const project = new Project({ title: req.body.name, completed: false });
+    const project = new Project({
+      title: req.body.title,
+      description: req.body.description,
+      estimatedTime: req.body.estimatedTime,
+      completed: req.body.completed,
+      user: req.user._id,
+    });
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("project_form", {
         title: "Create Project",
-        project,
         errors: errors.array(),
       });
       return;
     } else {
+      console.log(req.user.id);
       // Data from form is valid.
       // Check if Project with same name already exists.
-      Project.findOne({ title: req.body.name }).exec((err, found_project) => {
+      Project.findOne({
+        title: req.body.title,
+        user: req.user.id,
+      }).exec((err, found_project) => {
         if (err) {
           return next(err);
         }

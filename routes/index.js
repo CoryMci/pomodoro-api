@@ -38,8 +38,8 @@ router.post("/register", auth_controller.register_post);
 // GET request to update user.
 // router.get("/user/:id/update", user_controller.user_update_get);
 
-// GET request for one User.
-router.get("/user/:id", isAuth, user_controller.user_detail);
+// GET request for one User summary
+router.get("/user/summary", isAuth, user_controller.user_detail);
 
 // POST request to update user.
 // router.post("/user/:id/update", user_controller.user_update_post);
@@ -47,10 +47,10 @@ router.get("/user/:id", isAuth, user_controller.user_detail);
 /// PROJECT ROUTES ///
 
 // GET request for creating project. NOTE This must come before route for id (i.e. display project).
-router.get("/project/create", project_controller.project_create_get);
+router.get("/project/create", isAuth, project_controller.project_create_get);
 
 // POST request for creating project.
-router.post("/project/create", project_controller.project_create_post);
+router.post("/project/create", isAuth, project_controller.project_create_post);
 
 // GET request to delete project.
 router.get("/project/:id/delete", project_controller.project_delete_get);

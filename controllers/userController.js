@@ -9,11 +9,11 @@ const async = require("async");
 exports.user_detail = (req, res) => {
   async.parallel(
     {
-      project_count(callback) {
-        Project.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
+      projects(callback) {
+        Project.find({ user: req.user._id }, callback); // Pass an empty object as match condition to find all documents of this collection
       },
-      task_count(callback) {
-        Task.countDocuments({}, callback);
+      tasks(callback) {
+        Task.find({ user: req.user._id }, callback);
       },
     },
     (err, results) => {

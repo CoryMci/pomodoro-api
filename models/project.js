@@ -12,4 +12,8 @@ const ProjectSchema = new Schema({
   completed: { type: Boolean, required: true },
 });
 
+ProjectSchema.virtual("url").get(function () {
+  return `/project/${this.id}`;
+});
+
 module.exports = mongoose.model("Project", ProjectSchema);
