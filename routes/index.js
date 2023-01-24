@@ -60,11 +60,13 @@ router.delete(
   project_controller.project_delete
 );
 
-// GET request to update project.
-router.get("/project/:id/update", project_controller.project_update_get);
-
-// POST request to update project.
-router.post("/project/:id/update", project_controller.project_update_post);
+// PUT request to update project.
+router.put(
+  "/project/:id",
+  isAuth,
+  project_controller.getProject,
+  project_controller.project_update_put
+);
 
 // GET request for one project.
 router.get(

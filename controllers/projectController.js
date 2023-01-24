@@ -43,24 +43,29 @@ exports.project_create_get = (req, res) => {
 
 // Handle Project create on POST.
 exports.project_create_post = [
-  // Validate and sanitize the name field.
-  body("title", "Project Title required").trim().isLength({ min: 1 }).escape(),
+  body("title", "Project Title must be between 3 and 50 characters")
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .escape(),
   body("description")
     .optional()
     .isLength({ max: 250 })
     .withMessage("Description must be less than 250 characters"),
   body("estimatedTime")
     .optional()
-    .isNumeric()
-    .withMessage("Estimated Time should be a number"),
-  //body("est_time", "Must be a number between 1 and 100").isInt({ min: 1, max: 100 }),
+    .isNumeric({ min: 1, max: 100 })
+    .withMessage("Estimated Time should be a number between 1 and 100"),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-    if (req.body.completed === undefined) {
-      req.body.completed = false; //if checkbox not checked, return false
+    if (req.body.description === undefined) {
+      req.body.description = "";
+    }
+
+    if (req.body.estimatedTime === undefined) {
+      req.body.estimatedTime = 1;
     }
     // Create a Project object with escaped and trimmed data.
     const project = new Project({
@@ -115,12 +120,53 @@ exports.project_delete = async function (req, res) {
   }
 };
 
-// Display Project update form on GET.
-exports.project_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project update GET");
-};
+// Handle Project update on PUT.
+exports.project_update_put = [
+  // Validate and sanitize the name field.
+  body("title", "Project Title must be between 3 and 50 characters")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .escape(),
+  body("description")
+    .optional()
+    .isLength({ max: 250 })
+    .withMessage("Description must be less than 250 characters"),
+  body("timeSpent")
+    .optional()
+    .isNumeric({ min: 1, max: 100 })
+    .withMessage("Time Spent should be a number between 1 and 100"),
+  body("estimatedTime")
+    .optional()
+    .isNumeric({ min: 1, max: 100 })
+    .withMessage("Estimated Time should be a number between 1 and 100"),
+  body("completed")
+    .optional()
+    .isBoolean()
+    .withMessage("completed paramater should be boolean"),
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // There are errors. Send 422
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      // Data from form is valid.
+      // if req.body fields are undefined, leave it as is.
+      res.project.title = req.body.title || res.project.title;
+      res.project.description = req.body.description || res.project.description;
+      res.project.timeSpent = req.body.timeSpent || res.project.timeSpent;
+      res.project.estimatedTime =
+        req.body.estimatedTime || res.project.estimatedTime;
+      res.project.completed = req.body.completed || res.project.completed;
 
-// Handle Project update on POST.
-exports.project_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project update POST");
-};
+      res.project.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(res.project.url);
+      });
+    }
+  },
+];
