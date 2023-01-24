@@ -7,9 +7,9 @@ const ProjectSchema = new Schema({
   description: { type: String },
   created: { type: Date, default: Date.now },
   user: { type: Schema.Types.ObjectId, ref: "User" },
-  timeSpent: { type: Number },
+  timeSpent: { type: Number, default: 0 },
   estimatedTime: { type: Number },
-  completed: { type: Boolean, required: true },
+  completed: { type: Boolean, default: false },
 });
 
 ProjectSchema.virtual("url").get(function () {

@@ -52,11 +52,13 @@ router.get("/project/create", isAuth, project_controller.project_create_get);
 // POST request for creating project.
 router.post("/project/create", isAuth, project_controller.project_create_post);
 
-// GET request to delete project.
-router.get("/project/:id/delete", project_controller.project_delete_get);
-
-// POST request to delete project.
-router.post("/project/:id/delete", project_controller.project_delete_post);
+// DELETE request to delete project.
+router.delete(
+  "/project/:id",
+  isAuth,
+  project_controller.getProject,
+  project_controller.project_delete
+);
 
 // GET request to update project.
 router.get("/project/:id/update", project_controller.project_update_get);
@@ -67,12 +69,13 @@ router.post("/project/:id/update", project_controller.project_update_post);
 // GET request for one project.
 router.get(
   "/project/:id",
+  isAuth,
   project_controller.getProject,
   project_controller.project_detail
 );
 
 // GET request for list of all projects.
-router.get("/projects", project_controller.project_list);
+router.get("/project", isAuth, project_controller.project_list);
 
 /// TASK ROUTES ///
 

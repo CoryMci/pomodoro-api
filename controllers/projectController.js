@@ -6,6 +6,7 @@ const async = require("async");
 const { exists } = require("../models/user");
 
 exports.getProject = async function (req, res, next) {
+  // must be used with isAuth middleware
   let project;
   try {
     project = await Project.findOne({ _id: req.params.id, user: req.user.id });
@@ -44,18 +45,28 @@ exports.project_create_get = (req, res) => {
 exports.project_create_post = [
   // Validate and sanitize the name field.
   body("title", "Project Title required").trim().isLength({ min: 1 }).escape(),
+  body("description")
+    .optional()
+    .isLength({ max: 250 })
+    .withMessage("Description must be less than 250 characters"),
+  body("estimatedTime")
+    .optional()
+    .isNumeric()
+    .withMessage("Estimated Time should be a number"),
   //body("est_time", "Must be a number between 1 and 100").isInt({ min: 1, max: 100 }),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
+    if (req.body.completed === undefined) {
+      req.body.completed = false; //if checkbox not checked, return false
+    }
     // Create a Project object with escaped and trimmed data.
     const project = new Project({
       title: req.body.title,
       description: req.body.description,
       estimatedTime: req.body.estimatedTime,
-      completed: req.body.completed,
       user: req.user._id,
     });
 
@@ -95,13 +106,13 @@ exports.project_create_post = [
 ];
 
 // Display Project delete form on GET.
-exports.project_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project delete GET");
-};
-
-// Handle Project delete on POST.
-exports.project_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Project delete POST");
+exports.project_delete = async function (req, res) {
+  try {
+    await res.project.remove();
+    res.json({ message: "Project deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // Display Project update form on GET.

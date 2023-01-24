@@ -36,7 +36,7 @@ exports.register_get = (req, res) => {
 // Handle User create on POST.
 exports.register_post = [
   // Validate and sanitize the name field.
-  body("name", "Username required").trim().isLength({ min: 1 }).escape(),
+  body("username", "Username required").trim().isLength({ min: 1 }).escape(),
   body("password", "Password required").isLength({ min: 1 }).escape(),
 
   // Process request after validation and sanitization.
@@ -52,13 +52,14 @@ exports.register_post = [
 
     // Create a user object with escaped and trimmed data.
     const user = new User({
-      username: req.body.name,
+      username: req.body.username,
       hash: hash,
       salt: salt,
     });
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
+      console.log(errors);
       res.render("user_form", {
         title: "Create User",
         user,
@@ -68,7 +69,7 @@ exports.register_post = [
     } else {
       // Data from form is valid.
       // Check if User with same name already exists.
-      User.findOne({ username: req.body.name }).exec((err, found_user) => {
+      User.findOne({ username: req.body.username }).exec((err, found_user) => {
         if (err) {
           return next(err);
         }
