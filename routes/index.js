@@ -65,7 +65,11 @@ router.get("/project/:id/update", project_controller.project_update_get);
 router.post("/project/:id/update", project_controller.project_update_post);
 
 // GET request for one project.
-router.get("/project/:id", project_controller.project_detail);
+router.get(
+  "/project/:id",
+  project_controller.getProject,
+  project_controller.project_detail
+);
 
 // GET request for list of all projects.
 router.get("/projects", project_controller.project_list);

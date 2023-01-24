@@ -3,6 +3,21 @@ const User = require("../models/user");
 
 const { body, validationResult } = require("express-validator");
 const async = require("async");
+const { exists } = require("../models/user");
+
+exports.getProject = async function (req, res, next) {
+  let project;
+  try {
+    project = await Project.findOne({ _id: req.params.id, user: req.user.id });
+    if (project == null) {
+      return res.status(400).json({ message: "Cannot find project" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+  res.project = project;
+  next();
+};
 
 // Display list of all Projects.
 exports.project_list = function (req, res, next) {
@@ -17,16 +32,7 @@ exports.project_list = function (req, res, next) {
 
 // detail page for a specific Project.
 exports.project_detail = (req, res) => {
-  Project.findOne({ _id: req.params.id }).exec((err, found_project) => {
-    if (err) {
-      res.statusCode = 404;
-    }
-    if (found_project) {
-      res.json(found_project);
-    } else {
-      res.json({ error: 404 });
-    }
-  });
+  res.json(res.project);
 };
 
 // Project create form on GET.
