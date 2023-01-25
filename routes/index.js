@@ -29,20 +29,8 @@ router.get("/register", auth_controller.register_get);
 // POST request for creating user.
 router.post("/register", auth_controller.register_post);
 
-// GET request to delete user.
-// router.get("/user/:id/delete", user_controller.user_delete_get);
-
-// POST request to delete user.
-// router.post("/user/:id/delete", user_controller.user_delete_post);
-
-// GET request to update user.
-// router.get("/user/:id/update", user_controller.user_update_get);
-
 // GET request for one User summary
 router.get("/user/summary", isAuth, user_controller.user_detail);
-
-// POST request to update user.
-// router.post("/user/:id/update", user_controller.user_update_post);
 
 /// PROJECT ROUTES ///
 
@@ -81,28 +69,34 @@ router.get("/project", isAuth, project_controller.project_list);
 
 /// TASK ROUTES ///
 
-// GET request for creating a task. NOTE This must come before route that displays task (uses id).
-router.get("/task/create", task_controller.task_create_get);
+// GET request for list of all tasks.
+router.get("/task", isAuth, task_controller.task_list);
 
 //POST request for creating task.
-router.post("/task/create", task_controller.task_create_post);
+router.post("/task", isAuth, task_controller.task_create_post);
 
-// GET request to delete task.
-router.get("/task/:id/delete", task_controller.task_delete_get);
+// DELETE request to delete task.
+router.delete(
+  "/task/:id/",
+  isAuth,
+  task_controller.getTask,
+  task_controller.task_delete
+);
 
-// POST request to delete task.
-router.post("/task/:id/delete", task_controller.task_delete_post);
-
-// GET request to update task.
-router.get("/task/:id/update", task_controller.task_update_get);
-
-// POST request to update task.
-router.post("/task/:id/update", task_controller.task_update_post);
+// PUT request to update task.
+router.put(
+  "/task/:id/",
+  isAuth,
+  task_controller.getTask,
+  task_controller.task_update_put
+);
 
 // GET request for one task.
-router.get("/task/:id", task_controller.task_detail);
-
-// GET request for list of all task.
-router.get("/tasks", task_controller.task_list);
+router.get(
+  "/task/:id",
+  isAuth,
+  task_controller.getTask,
+  task_controller.task_detail
+);
 
 module.exports = router;

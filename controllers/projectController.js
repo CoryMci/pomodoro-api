@@ -110,7 +110,7 @@ exports.project_create_post = [
   },
 ];
 
-// Display Project delete form on GET.
+// Delete project on DELETE.
 exports.project_delete = async function (req, res) {
   try {
     await res.project.remove();
