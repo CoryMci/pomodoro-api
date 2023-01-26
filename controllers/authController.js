@@ -28,6 +28,14 @@ exports.logout_get = (req, res, next) => {
   });
 };
 
+exports.login_success = (req, res, next) => {
+  res.json({ result: "success" });
+};
+
+exports.login_failure = (req, res, next) => {
+  res.status(401).json({ result: "failure" });
+};
+
 // User create form
 exports.register_get = (req, res) => {
   res.render("user_form", { title: "Create User", errors: false });

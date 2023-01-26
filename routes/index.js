@@ -20,6 +20,12 @@ router.get("/login", auth_controller.login_get);
 // POST request for logging in
 router.post("/login", auth_controller.login_post);
 
+//Response for successful login
+router.get("/login-success", isAuth, auth_controller.login_success);
+
+//Response for failed login
+router.get("/login-failure", auth_controller.login_failure);
+
 // GET logout page - visitng this route logs the user out
 router.get("/logout", auth_controller.logout_get);
 
