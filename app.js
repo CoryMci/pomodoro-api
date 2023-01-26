@@ -10,6 +10,8 @@ var passport = require("passport");
 var crpyto = require("crypto");
 require("./config/passport");
 
+var cors = require("cors");
+
 // Set up mongoose connection
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
@@ -26,6 +28,8 @@ const sessionStore = MongoStore.create({
 const indexRouter = require("./routes/index");
 
 var app = express();
+
+app.use(cors()); //enable CORS so react can fetch API data
 
 //initialize session
 app.use(

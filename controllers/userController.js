@@ -18,8 +18,7 @@ exports.user_detail = (req, res) => {
     },
     (err, results) => {
       res.json({
-        title: "Default user",
-        data: results,
+        summary: results,
       });
     }
   );
