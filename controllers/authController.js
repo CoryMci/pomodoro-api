@@ -17,9 +17,10 @@ exports.login_post = (req, res, next) => {
   User.findOne({ username: req.body.username }) //Check database for username
     .then((user) => {
       if (!user) {
-        res.status(401).json({ success: false, msg: "could not find user" });
+        return res
+          .status(401)
+          .json({ success: false, msg: "could not find user" });
       }
-
       const isValid = Utils.validPassword(
         req.body.password,
         user.hash,
@@ -28,13 +29,15 @@ exports.login_post = (req, res, next) => {
 
       if (isValid) {
         const tokenObj = Utils.issueJWT(user);
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           token: tokenObj.token,
           expiresIn: tokenObj.expires,
         });
       } else {
-        res.status(401).json({ success: false, msg: "incorrect password" });
+        return res
+          .status(401)
+          .json({ success: false, msg: "incorrect password" });
       }
     })
     .catch((err) => {
