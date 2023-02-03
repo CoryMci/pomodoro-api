@@ -1,16 +1,14 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 require("dotenv").config(); //to secure DB connection URI
+const cors = require("cors");
 
-const session = require("express-session");
-var passport = require("passport");
-var crpyto = require("crypto");
-require("./config/passport");
-
-var cors = require("cors");
+const passport = require("passport");
+const crpyto = require("crypto");
+require("./config/passport")(passport);
 
 // Set up mongoose connection
 const MongoStore = require("connect-mongo");
@@ -20,33 +18,13 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-const sessionStore = MongoStore.create({
-  mongoUrl: mongoDB,
-  collection: "pomo_db",
-});
-
 const indexRouter = require("./routes/index");
+const authRouter = require("./routes/secure-routes");
 
-var app = express();
-
-app.use(cors()); //enable CORS so react can fetch API data
-
-//initialize session
-app.use(
-  session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore, //stores session info in MongoStore mongoose connection.
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24, //1 day expiry
-    },
-  })
-);
+const app = express();
 
 //passport authentication
 app.use(passport.initialize());
-app.use(passport.session());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -57,8 +35,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors()); //enable CORS so react can fetch API data
 
 app.use("/", indexRouter);
+app.use(
+  "/api",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/auth-failure",
+  }),
+  authRouter
+);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

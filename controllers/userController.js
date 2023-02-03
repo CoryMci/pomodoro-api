@@ -1,12 +1,13 @@
 const Project = require("../models/project");
 const Task = require("../models/task");
 const User = require("../models/user");
-const passwordUtils = require("../lib/passwordUtils");
+const passwordUtils = require("../lib/Utils");
 
 const { body, validationResult } = require("express-validator");
 const async = require("async");
 
 exports.user_detail = (req, res) => {
+  console.log(req.user);
   async.parallel(
     {
       projects(callback) {
@@ -22,10 +23,6 @@ exports.user_detail = (req, res) => {
       });
     }
   );
-};
-
-exports.index = (req, res) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
 };
 
 // User create form

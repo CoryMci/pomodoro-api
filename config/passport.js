@@ -1,46 +1,31 @@
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
+const fs = require("fs");
+const path = require("path");
 const User = require("../models/user");
-const validPassword = require("../lib/passwordUtils").validPassword;
 
-//passport-local configuration
+const keyPath = path.join(__dirname, "..", "id_rsa_pub.pem");
+const PUB_KEY = fs.readFileSync(keyPath, "utf8");
 
-const customFields = {
-  usernameField: "username",
-  passwordField: "password",
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: PUB_KEY,
+  algorithms: ["RS256"],
 };
 
-const verifyCallback = (username, password, done) => {
-  User.findOne({ username: username }) //Check database for username
-    .then((user) => {
-      if (!user) {
-        return done(null, false);
-      }
-
-      const isValid = validPassword(password, user.hash, user.salt); //Check if password is valid
-      if (isValid) {
-        return done(null, user);
-      } else {
-        return done(null, false);
-      }
+module.exports = (passport) => {
+  passport.use(
+    new JwtStrategy(options, function (jwt_payload, next) {
+      User.findOne({ _id: jwt_payload.sub }, function (err, user) {
+        if (err) {
+          return next(err, false);
+        }
+        if (user) {
+          return next(null, user);
+        } else {
+          return next(null, false);
+        }
+      });
     })
-    .catch((err) => {
-      done(err);
-    });
+  );
 };
-
-const strategy = new LocalStrategy(customFields, verifyCallback);
-
-passport.use(strategy);
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((userId, done) => {
-  User.findById(userId)
-    .then((user) => {
-      done(null, user);
-    })
-    .catch((err) => done(err));
-});

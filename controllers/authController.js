@@ -1,6 +1,5 @@
 const User = require("../models/user");
-const passwordUtils = require("../lib/passwordUtils");
-const passport = require("passport");
+const Utils = require("../lib/Utils");
 
 const { body, validationResult } = require("express-validator");
 
@@ -14,10 +13,34 @@ exports.login_get = (req, res, next) => {
   res.send(form);
 };
 
-exports.login_post = passport.authenticate("local", {
-  failureRedirect: "/login-failure",
-  successRedirect: "/login-success",
-});
+exports.login_post = (req, res, next) => {
+  User.findOne({ username: req.body.username }) //Check database for username
+    .then((user) => {
+      if (!user) {
+        res.status(401).json({ success: false, msg: "could not find user" });
+      }
+
+      const isValid = Utils.validPassword(
+        req.body.password,
+        user.hash,
+        user.salt
+      ); //Check if password is valid
+
+      if (isValid) {
+        const tokenObj = Utils.issueJWT(user);
+        res.status(200).json({
+          success: true,
+          token: tokenObj.token,
+          expiresIn: tokenObj.expires,
+        });
+      } else {
+        res.status(401).json({ success: false, msg: "incorrect password" });
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 exports.logout_get = (req, res, next) => {
   req.logout((err) => {
@@ -29,10 +52,10 @@ exports.logout_get = (req, res, next) => {
 };
 
 exports.login_success = (req, res, next) => {
-  res.json({ result: "success" });
+  res.status(200).json({ result: "success" });
 };
 
-exports.login_failure = (req, res, next) => {
+exports.auth_failure = (req, res, next) => {
   res.status(401).json({ result: "failure" });
 };
 
