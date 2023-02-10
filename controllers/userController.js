@@ -14,7 +14,7 @@ exports.user_detail = (req, res) => {
         Project.find({ user: req.user._id }, callback); // Pass an empty object as match condition to find all documents of this collection
       },
       tasks(callback) {
-        Task.find({ user: req.user._id }, callback);
+        Task.find({ user: req.user._id }, callback).populate("project");
       },
     },
     (err, results) => {
