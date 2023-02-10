@@ -79,7 +79,7 @@ exports.register_post = [
     const errors = validationResult(req);
 
     // generates a salted hash from user input
-    const saltHash = passwordUtils.genPassword(req.body.password);
+    const saltHash = Utils.genPassword(req.body.password);
 
     const salt = saltHash.salt;
     const hash = saltHash.hash;
@@ -93,12 +93,7 @@ exports.register_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
-      console.log(errors);
-      res.render("user_form", {
-        title: "Create User",
-        user,
-        errors: errors.array(),
-      });
+      res.status(400).json({ errors: errors.array() });
       return;
     } else {
       // Data from form is valid.
@@ -109,15 +104,15 @@ exports.register_post = [
         }
 
         if (found_user) {
-          // User exists, redirect to its detail page.
-          res.redirect(found_user.url);
+          // User exists
+          res.status(400).json({ message: "username taken!" });
         } else {
           user.save((err) => {
             if (err) {
               return next(err);
             }
-            // User saved. Redirect to genre detail page.
-            res.redirect(user.url);
+            // User saved.
+            res.status(200).json({ message: "successfully registered!" });
           });
         }
       });
