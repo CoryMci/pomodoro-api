@@ -84,7 +84,7 @@ exports.task_create_post = [
             if (err) {
               return next(err);
             }
-            res.redirect(task.url);
+            res.status(201).json({ message: "success" });
           });
         }
       });
@@ -96,7 +96,7 @@ exports.task_create_post = [
 exports.task_delete = async function (req, res) {
   try {
     await res.task.remove();
-    res.json({ message: "Task deleted" });
+    res.status(200).json({ message: "Task deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -145,13 +145,13 @@ exports.task_update_put = [
       res.task.timeSpent = req.body.timeSpent || res.task.timeSpent;
       res.task.estimatedTime = req.body.estimatedTime || res.task.estimatedTime;
       res.task.completed = req.body.completed || res.task.completed;
-      res.task.project = req.body.project;
+      res.task.project = req.body.project || res.task.project;
 
       res.task.save((err) => {
         if (err) {
           return next(err);
         }
-        res.redirect(res.task.url);
+        res.status(201).json({ message: "success" });
       });
     }
   },
