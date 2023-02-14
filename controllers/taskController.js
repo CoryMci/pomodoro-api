@@ -33,10 +33,13 @@ exports.task_detail = (req, res) => {
 
 // task create form on GET.
 exports.task_create_post = [
+  function (req, res, next) {
+    console.log(req.body);
+    next();
+  },
   body("title", "Task Title must be between 3 and 50 characters")
     .trim()
-    .isLength({ min: 3, max: 50 })
-    .escape(),
+    .isLength({ min: 3, max: 50 }),
   body("description")
     .optional()
     .isLength({ max: 250 })
@@ -77,8 +80,9 @@ exports.task_create_post = [
         }
 
         if (found_task) {
-          // Task exists, redirect to its detail page.
-          res.redirect(found_task.url);
+          res
+            .status(303)
+            .json({ message: "Task already exists with that name!" });
         } else {
           task.save((err) => {
             if (err) {
@@ -108,8 +112,7 @@ exports.task_update_put = [
   body("title", "Task Title must be between 3 and 50 characters")
     .optional()
     .trim()
-    .isLength({ min: 3, max: 50 })
-    .escape(),
+    .isLength({ min: 3, max: 50 }),
   body("description")
     .optional()
     .isLength({ max: 250 })
@@ -138,6 +141,7 @@ exports.task_update_put = [
       // There are errors. Send 422
       return res.status(422).json({ errors: errors.array() });
     } else {
+      console.log(req.body.title);
       // Data from form is valid.
       // if req.body fields are undefined, leave it as is.
       res.task.title = req.body.title || res.task.title;

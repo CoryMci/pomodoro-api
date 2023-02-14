@@ -45,8 +45,7 @@ exports.project_create_get = (req, res) => {
 exports.project_create_post = [
   body("title", "Project Title must be between 3 and 50 characters")
     .trim()
-    .isLength({ min: 3, max: 50 })
-    .escape(),
+    .isLength({ min: 3, max: 50 }),
   body("description")
     .optional()
     .isLength({ max: 250 })
@@ -102,7 +101,7 @@ exports.project_create_post = [
             if (err) {
               return next(err);
             }
-            res.redirect(project.url);
+            res.status(201).json({ message: "sucess!" });
           });
         }
       });
@@ -126,8 +125,7 @@ exports.project_update_put = [
   body("title", "Project Title must be between 3 and 50 characters")
     .optional()
     .trim()
-    .isLength({ min: 3, max: 50 })
-    .escape(),
+    .isLength({ min: 3, max: 50 }),
   body("description")
     .optional()
     .isLength({ max: 250 })
@@ -165,7 +163,7 @@ exports.project_update_put = [
         if (err) {
           return next(err);
         }
-        res.redirect(res.project.url);
+        res.status(201).json({ message: "success" });
       });
     }
   },

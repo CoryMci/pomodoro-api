@@ -11,10 +11,10 @@ router.get("/user/summary", user_controller.user_detail);
 /// PROJECT ROUTES ///
 
 // GET request for creating project. NOTE This must come before route for id (i.e. display project).
-router.get("/project/create", project_controller.project_create_get);
+router.get("/project", project_controller.project_create_get);
 
 // POST request for creating project.
-router.post("/project/create", project_controller.project_create_post);
+router.post("/project", project_controller.project_create_post);
 
 // DELETE request to delete project.
 router.delete(
