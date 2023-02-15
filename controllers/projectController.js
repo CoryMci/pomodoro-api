@@ -36,20 +36,11 @@ exports.project_detail = (req, res) => {
   res.json(res.project);
 };
 
-// Project create form on GET.
-exports.project_create_get = (req, res) => {
-  res.render("project_form", { title: "Create Project" });
-};
-
 // Handle Project create on POST.
 exports.project_create_post = [
   body("title", "Project Title must be between 3 and 50 characters")
     .trim()
     .isLength({ min: 3, max: 50 }),
-  body("description")
-    .optional()
-    .isLength({ max: 250 })
-    .withMessage("Description must be less than 250 characters"),
   body("estimatedTime")
     .optional()
     .isNumeric({ min: 1, max: 100 })
@@ -59,9 +50,6 @@ exports.project_create_post = [
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-    if (req.body.description === undefined) {
-      req.body.description = "";
-    }
 
     if (req.body.estimatedTime === undefined) {
       req.body.estimatedTime = 1;
@@ -69,7 +57,6 @@ exports.project_create_post = [
     // Create a Project object with escaped and trimmed data.
     const project = new Project({
       title: req.body.title,
-      description: req.body.description,
       estimatedTime: req.body.estimatedTime,
       user: req.user._id,
     });
@@ -126,10 +113,6 @@ exports.project_update_put = [
     .optional()
     .trim()
     .isLength({ min: 3, max: 50 }),
-  body("description")
-    .optional()
-    .isLength({ max: 250 })
-    .withMessage("Description must be less than 250 characters"),
   body("timeSpent")
     .optional()
     .isNumeric({ min: 1, max: 100 })
@@ -153,7 +136,6 @@ exports.project_update_put = [
       // Data from form is valid.
       // if req.body fields are undefined, leave it as is.
       res.project.title = req.body.title || res.project.title;
-      res.project.description = req.body.description || res.project.description;
       res.project.timeSpent = req.body.timeSpent || res.project.timeSpent;
       res.project.estimatedTime =
         req.body.estimatedTime || res.project.estimatedTime;

@@ -10,8 +10,8 @@ router.get("/user/summary", user_controller.user_detail);
 
 /// PROJECT ROUTES ///
 
-// GET request for creating project. NOTE This must come before route for id (i.e. display project).
-router.get("/project", project_controller.project_create_get);
+// GET request for list of all projects.
+router.get("/project", project_controller.project_list);
 
 // POST request for creating project.
 router.post("/project", project_controller.project_create_post);
@@ -37,9 +37,6 @@ router.get(
   project_controller.project_detail
 );
 
-// GET request for list of all projects.
-router.get("/project", project_controller.project_list);
-
 /// TASK ROUTES ///
 
 // GET request for list of all tasks.
@@ -50,14 +47,14 @@ router.post("/task", task_controller.task_create_post);
 
 // DELETE request to delete task.
 router.delete(
-  "/task/:id/",
+  "/task/:id",
   task_controller.getTask,
   task_controller.task_delete
 );
 
 // PUT request to update task.
 router.put(
-  "/task/:id/",
+  "/task/:id",
   task_controller.getTask,
   task_controller.task_update_put
 );

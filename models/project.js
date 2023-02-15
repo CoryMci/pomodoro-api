@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const ProjectSchema = new Schema({
   title: { type: String, required: true },
-  description: { type: String },
   created: { type: Date, default: Date.now },
   user: { type: Schema.Types.ObjectId, ref: "User" },
   timeSpent: { type: Number, default: 0 },

@@ -33,17 +33,9 @@ exports.task_detail = (req, res) => {
 
 // task create form on GET.
 exports.task_create_post = [
-  function (req, res, next) {
-    console.log(req.body);
-    next();
-  },
   body("title", "Task Title must be between 3 and 50 characters")
     .trim()
     .isLength({ min: 3, max: 50 }),
-  body("description")
-    .optional()
-    .isLength({ max: 250 })
-    .withMessage("Description must be less than 250 characters"),
   body("estimatedTime")
     .optional()
     .isNumeric({ min: 1, max: 100 })
@@ -57,7 +49,6 @@ exports.task_create_post = [
     // Create a Project object with escaped and trimmed data.
     const task = new Task({
       title: req.body.title,
-      description: req.body.description,
       project: req.body.project,
       estimatedTime: req.body.estimatedTime,
       due_date: req.body.duedate,
@@ -68,7 +59,6 @@ exports.task_create_post = [
       // There are errors. Send 422.
       return res.status(422).json({ errors: errors.array() });
     } else {
-      console.log(req.user.id);
       // Data from form is valid.
       // Check if Project with same name already exists.
       Task.findOne({
@@ -113,10 +103,6 @@ exports.task_update_put = [
     .optional()
     .trim()
     .isLength({ min: 3, max: 50 }),
-  body("description")
-    .optional()
-    .isLength({ max: 250 })
-    .withMessage("Description must be less than 250 characters"),
   body("timeSpent")
     .optional()
     .isNumeric({ min: 1, max: 100 })
@@ -141,11 +127,9 @@ exports.task_update_put = [
       // There are errors. Send 422
       return res.status(422).json({ errors: errors.array() });
     } else {
-      console.log(req.body.title);
       // Data from form is valid.
       // if req.body fields are undefined, leave it as is.
       res.task.title = req.body.title || res.task.title;
-      res.task.description = req.body.description || res.task.description;
       res.task.timeSpent = req.body.timeSpent || res.task.timeSpent;
       res.task.estimatedTime = req.body.estimatedTime || res.task.estimatedTime;
       res.task.completed = req.body.completed || res.task.completed;
