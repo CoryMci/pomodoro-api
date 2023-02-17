@@ -4,6 +4,7 @@ const router = express.Router();
 const user_controller = require("../controllers/userController");
 const task_controller = require("../controllers/taskController");
 const project_controller = require("../controllers/projectController");
+const log_controller = require("../controllers/logController");
 
 // GET request for one User summary
 router.get("/user/summary", user_controller.user_detail);
@@ -61,5 +62,12 @@ router.put(
 
 // GET request for one task.
 router.get("/task/:id", task_controller.getTask, task_controller.task_detail);
+
+//POST request for adding a time entry
+router.post("/log", log_controller.log_create_post);
+
+router.put("/log/:id", log_controller.log_update_put);
+
+router.get("/log/:id", log_controller.log_get);
 
 module.exports = router;

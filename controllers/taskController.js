@@ -99,10 +99,10 @@ exports.task_delete = async function (req, res) {
 // Handle task update on PUT.
 exports.task_update_put = [
   // Validate and sanitize the name field.
-  body("title", "Task Title must be between 3 and 50 characters")
+  body("title", "Task Title must be between 3 and 250 characters")
     .optional()
     .trim()
-    .isLength({ min: 3, max: 50 }),
+    .isLength({ min: 3, max: 250 }),
   body("timeSpent")
     .optional()
     .isNumeric({ min: 1, max: 100 })

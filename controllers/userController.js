@@ -1,6 +1,7 @@
 const Project = require("../models/project");
 const Task = require("../models/task");
 const User = require("../models/user");
+const TimeLog = require("../models/timeLog");
 const passwordUtils = require("../lib/Utils");
 
 const { body, validationResult } = require("express-validator");
@@ -15,6 +16,9 @@ exports.user_detail = (req, res) => {
       },
       tasks(callback) {
         Task.find({ user: req.user._id }, callback).populate("project");
+      },
+      logs(callback) {
+        TimeLog.find({ user: req.user._id }, callback);
       },
     },
     (err, results) => {
