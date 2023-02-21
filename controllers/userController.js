@@ -8,7 +8,6 @@ const { body, validationResult } = require("express-validator");
 const async = require("async");
 
 exports.user_detail = (req, res) => {
-  console.log(req.user);
   async.parallel(
     {
       projects(callback) {

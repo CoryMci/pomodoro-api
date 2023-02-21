@@ -3,22 +3,26 @@ const { body, validationResult } = require("express-validator");
 
 // log create on POST
 exports.log_create_post = [
-  body("task", "Invalid task Id").isMongoId().optional(),
-  body("completed").isBoolean().optional(),
+  body("task", "Invalid task Id").isMongoId().optional({ nullable: true }),
+  body("completed").optional().isBoolean(),
+  body("duration").optional().isNumeric({ min: 1 }),
 
   // Process request after validation
   (req, res, next) => {
+    console.log(req.body.task, req.body.completed, req.body.duration);
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     // Create a TimeLog object with validated data
     const newEntry = new TimeLog({
       task: req.body.task || null,
-      completed: req.body.completed,
+      completed: req.body.completed || false,
       user: req.user._id,
+      duration: req.body.duration || 1,
     });
 
     if (!errors.isEmpty()) {
       // There are errors. Send 422.
+      console.log(errors.array());
       return res.status(422).json({ errors: errors.array() });
     } else {
       // Data sent is valid
@@ -36,6 +40,7 @@ exports.log_create_post = [
 // Handle log update on PUT.
 exports.log_update_put = [
   // Validate and sanitize
+  body("task", "Invalid task Id").isMongoId().optional({ nullable: true }),
   body("duration")
     .isNumeric({ min: 1 })
     .withMessage("Duration should be greater than 0"),
@@ -68,6 +73,7 @@ exports.log_update_put = [
       // if req.body fields are undefined, leave it as is.
       res.log.duration = req.body.duration || res.log.duration;
       res.log.completed = req.body.completed;
+      res.log.task = req.body.task || null;
 
       res.log.save((err) => {
         if (err) {

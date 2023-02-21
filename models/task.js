@@ -15,7 +15,7 @@ const TaskSchema = new Schema({
   completed: { type: Boolean, default: false, required: true },
   user: { type: Schema.Types.ObjectId, ref: "User" },
   timeSpent: { type: Number, default: 0 },
-  estimatedTime: { type: Number, default: null },
+  estimatedTime: { type: Number, default: 1 },
 });
 
 TaskSchema.virtual("url").get(function () {
