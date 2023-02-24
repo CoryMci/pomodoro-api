@@ -89,23 +89,3 @@ exports.user_create_post = [
     }
   },
 ];
-
-// // Display User delete form on GET. -> deferred until we add new user option
-// exports.user_delete_get = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User delete GET");
-// };
-
-// // Handle User delete on POST. -> deferred until we add new user option
-// exports.user_delete_post = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User delete POST");
-// };
-
-// // Display User update form on GET. -> deferred until we add new user option
-// exports.user_update_get = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User update GET");
-// };
-
-// // Handle User update on POST. -> deferred until we add new user option
-// exports.user_update_post = (req, res) => {
-//   res.send("NOT IMPLEMENTED: User update POST");
-// };

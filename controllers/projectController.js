@@ -88,7 +88,7 @@ exports.project_create_post = [
             if (err) {
               return next(err);
             }
-            res.status(201).json({ message: "sucess!" });
+            res.status(201).json({ message: "success" });
           });
         }
       });

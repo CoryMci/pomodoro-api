@@ -46,7 +46,7 @@ exports.task_create_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     console.log(req.body.project);
-    // Create a Project object with escaped and trimmed data.
+    // Create a Task object with escaped and trimmed data.
     const task = new Task({
       title: req.body.title,
       project: req.body.project,
@@ -60,7 +60,7 @@ exports.task_create_post = [
       return res.status(422).json({ errors: errors.array() });
     } else {
       // Data from form is valid.
-      // Check if Project with same name already exists.
+      // Check if Task with same name already exists.
       Task.findOne({
         title: req.body.title,
         user: req.user.id,
